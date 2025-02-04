@@ -1,0 +1,44 @@
+
+Error: A param property was accessed directly with params.room. params is now a Promise and should be unwrapped with React.use() before accessing properties of the underlying params object. In this version of Next.js direct access to param properties is still supported to facilitate migration but in a future version you will be required to unwrap params with React.use().
+
+This error occurs because, in the latest version of Next.js (13.4 and later) with the App Router, params is now a Promise and needs to be unwrapped using React.use() (or await in a server component).
+
+✅ Fix:
+You need to use React.use() to properly access params in a Client Component:
+
+javascript
+Copy
+Edit
+'use client';
+import { useParams } from 'next/navigation';
+
+const Room = () => {
+  const params = useParams();  // Use useParams() hook to access params correctly
+
+  return (
+    <div>Room Details: {params.room}</div>
+  );
+}
+
+export default Room;
+🔍 Explanation:
+Why does this error happen?
+
+params is now a Promise in the App Router.
+In previous versions, you could directly destructure params from props, but now, in a Client Component, you must use useParams().
+Why use useParams()?
+
+In a Client Component, useParams() ensures that you correctly get the route parameters synchronously.
+It works with dynamic routes like /room/[room].
+🛠 Alternative: If Using a Server Component
+If you were using this in a Server Component, you could access params normally:
+
+javascript
+Copy
+Edit
+const Room = ({ params }) => {
+  return <div>Room Details: {params.room}</div>;
+};
+
+export default Room;
+But since your component is a Client Component ('use client'), you must use useParams().
